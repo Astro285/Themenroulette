@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <title>Themenroulette</title>
+  <style>
+    body { font-family: sans-serif; padding: 20px; }
+    input, button { margin: 5px; }
+  </style>
+</head>
+<body>
+  <h1>🎲 Themenroulette</h1>
+  
+  <div id="eingabeContainer">
+    <input type="text" id="name" placeholder="Name">
+    <input type="text" id="thema" placeholder="Thema">
+    <button onclick="hinzufuegen()">➕ Hinzufügen</button>
+  </div>
+
+  <h3>Teilnehmer:</h3>
+  <ul id="liste"></ul>
+
+  <button onclick="auslosen()">🎯 Auslosen</button>
+  <h3>Ergebnis:</h3>
+  <ul id="ergebnis"></ul>
+
+  <script>
+    let daten = [];
+
+    function hinzufuegen() {
+      const name = document.getElementById("name").value.trim();
+      const thema = document.getElementById("thema").value.trim();
+      if (!name || !thema) return alert("Bitte Name und Thema eingeben.");
+
+      daten.push({ name, thema });
+      document.getElementById("liste").innerHTML += `<li>${name}: ${thema}</li>`;
+      document.getElementById("name").value = "";
+      document.getElementById("thema").value = "";
+    }
+
+    function auslosen() {
+      if (daten.length < 3) return alert("Mindestens 3 Teilnehmer!");
+
+      const personen = daten.map(e => e.name);
+      const themen = daten.map(e => e.thema);
+
+      for (let i = 0; i < 1000; i++) {
+        const zugelost = [...themen].sort(() => 0.5 - Math.random());
+        const paarungen = personen.map((name, idx) => ({ name, thema: zugelost[idx] }));
+
+        const gueltig = paarungen.every((p, idx) => p.thema !== daten[idx].thema);
+        if (gueltig) {
+          document.getElementById("ergebnis").innerHTML =
+            paarungen.map(p => `<li><strong>${p.name}</strong> → ${p.thema}</li>`).join("");
+          return;
+        }
+      }
+
+      alert("Keine gültige Verteilung gefunden. Versuch es nochmal.");
+    }
+  </script>
+</body>
+</html>
